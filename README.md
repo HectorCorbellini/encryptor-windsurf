@@ -2,6 +2,8 @@
 
 This Java application implements a file encryption and decryption system using the Caesar cipher method. The program allows users to encrypt text files by shifting ASCII characters by a specified key value, and then decrypt them either using the same key or through a brute force method that automatically detects the key.
 
+📝 **For developers**: Check out our [CONTRIBUTING.md](CONTRIBUTING.md) guide for detailed instructions on running, modifying, and contributing to this project.
+
 ## Recent Improvements
 
 - **Clean Code Refactoring**: Applied clean code principles with proper separation of concerns into specialized classes
