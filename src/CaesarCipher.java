@@ -4,28 +4,54 @@ import java.util.ArrayList;
 import java.util.List;
 
 /**
- * Implementation of the Caesar Cipher encryption algorithm.
- * This class handles the core encryption and decryption logic.
+ * Implementation of the Caesar Cipher encryption algorithm for text file encryption.
+ * 
+ * This class provides a robust implementation of the Caesar cipher that:
+ * 1. Shifts each character by a specified key value in the ASCII table
+ * 2. Preserves file structure (line endings, special characters)
+ * 3. Handles both encryption and decryption operations
+ * 4. Includes smart key detection for encrypted files
+ * 
+ * Features:
+ * - Extended ASCII Support: Processes characters from space (32) to extended ASCII (255)
+ * - Smart Key Detection: Uses multiple strategies to detect encryption keys:
+ *   a) Pattern analysis of common text structures
+ *   b) Character frequency analysis
+ *   c) Readability scoring
+ * - Error Handling: Validates inputs and provides meaningful error messages
+ * - File Processing: Streams file content to handle large files efficiently
+ * 
+ * Usage Example:
+ * CaesarCipher cipher = new CaesarCipher();
+ * cipher.encryptFile("input.txt", "encrypted.txt", 5);  // Shift by 5
+ * cipher.decryptFile("encrypted.txt", "decrypted.txt", -5); // Shift back by -5
+ * 
+ * Limitations:
+ * - Text Files Only: Works only with ASCII text files (not binary)
+ * - Key Range: Limited by the ASCII range (32-255)
+ * - Pattern Detection: May not detect keys in very short texts
+ * - Memory Usage: Loads entire file content for key detection
  */
-public class CaesarCipher {
-    // ASCII character range for encryption/decryption
-    private static final int CHAR_START = 32;      // Space character
-    private static final int CHAR_END = 255;       // Extended ASCII end
-    private static final int CHAR_RANGE = CHAR_END - CHAR_START + 1;
+public class CaesarCipher implements Encryptor {
+    // ASCII character range constants for text processing
+    // ASCII character range for encryption/decryption (32-255 for printable characters)
+    private static final int CHAR_START = 32;      // First processable character (Space)
+    private static final int CHAR_END = 255;       // Last processable character (Extended ASCII)
+    private static final int CHAR_RANGE = CHAR_END - CHAR_START + 1;  // Total characters we can process
     
-    // Common ASCII characters for text analysis
-    private static final int UPPERCASE_A = 65;     // 'A'
-    private static final int UPPERCASE_Z = 90;     // 'Z'
-    private static final int LOWERCASE_A = 97;     // 'a'
-    private static final int LOWERCASE_Z = 122;    // 'z'
-    private static final int COMMA = 44;           // ','
-    private static final int PERIOD = 46;          // '.'
-    private static final int LINE_FEED = 10;       // '\n'
-    private static final int CARRIAGE_RETURN = 13; // '\r'
+    // ASCII values for text analysis and pattern detection
+    private static final int UPPERCASE_A = 65;     // Start of uppercase alphabet range
+    private static final int UPPERCASE_Z = 90;     // End of uppercase alphabet range
+    private static final int LOWERCASE_A = 97;     // Start of lowercase alphabet range
+    private static final int LOWERCASE_Z = 122;    // End of lowercase alphabet range
+    private static final int COMMA = 44;           // Punctuation for sentence structure
+    private static final int PERIOD = 46;          // Sentence terminator (used in pattern detection)
+    private static final int LINE_FEED = 10;       // Line ending '\n' (used in pattern detection)
+    private static final int CARRIAGE_RETURN = 13; // Line ending '\r' (Windows-style)
     
-    // Pattern detection constants
-    private static final int PATTERN_DISTANCE = 31; // Expected distance between period and line feed
-    private static final double MIN_READABILITY_SCORE = 0.7; // Minimum ratio of readable characters
+    // Pattern detection configuration
+    private static final int PATTERN_DISTANCE = 31; // Common byte distance between '.' and '\n' in text
+    private static final double MIN_READABILITY_SCORE = 0.7; // Text needs 70% readable chars to be valid
 
     /**
      * Encrypts a file using Caesar cipher with the given key

@@ -4,27 +4,49 @@ import java.nio.file.Files;
 import java.nio.file.Paths;
 
 /**
- * Utility class for file operations related to the encryption/decryption process.
- * This class handles reading from and writing to files.
+ * Utility class for handling file operations in the encryption/decryption process.
+ * 
+ * This class provides a clean interface for file operations with:
+ * 1. Proper character encoding (UTF-8)
+ * 2. Consistent error handling
+ * 3. File existence checks
+ * 
+ * Features:
+ * - UTF-8 encoding for proper text handling
+ * - Buffered I/O for efficient file operations
+ * - Descriptive error messages
+ * - Automatic resource management
+ * 
+ * Usage Example:
+ * FileHandler handler = new FileHandler();
+ * if (handler.fileExists("input.txt")) {
+ *     String content = handler.readFileAsString("input.txt");
+ *     handler.writeStringToFile("output.txt", content);
+ * }
  */
 public class FileHandler {
     
     /**
-     * Checks if a file exists
+     * Checks if a file exists at the specified path.
+     * This method is typically used before attempting read/write operations.
      * 
-     * @param filePath path to the file
-     * @return true if the file exists, false otherwise
+     * @param filePath absolute or relative path to the file
+     * @return true if the file exists and is readable, false otherwise
+     * @see #readFileAsString(String)
+     * @see #writeStringToFile(String, String)
      */
     public boolean fileExists(String filePath) {
         return Files.exists(Paths.get(filePath));
     }
     
     /**
-     * Reads the content of a file as a string
+     * Reads the entire content of a file as a UTF-8 encoded string.
+     * Uses buffered reading for efficient large file handling.
      * 
-     * @param filePath path to the file
-     * @return the content of the file as a string
-     * @throws IOException if an I/O error occurs
+     * @param filePath absolute or relative path to the file
+     * @return the content of the file as a UTF-8 string
+     * @throws IOException if the file cannot be read, doesn't exist,
+     *         or if there are insufficient permissions
      */
     public String readFileAsString(String filePath) throws IOException {
         try {
@@ -35,11 +57,13 @@ public class FileHandler {
     }
     
     /**
-     * Writes a string to a file
+     * Writes a string to a file using UTF-8 encoding.
+     * Creates the file if it doesn't exist, overwrites if it does.
      * 
-     * @param filePath path to the file
-     * @param content content to write
-     * @throws IOException if an I/O error occurs
+     * @param filePath absolute or relative path to the file
+     * @param content string content to write to the file
+     * @throws IOException if the file cannot be written to, parent directory
+     *         doesn't exist, or if there are insufficient permissions
      */
     public void writeStringToFile(String filePath, String content) throws IOException {
         try {

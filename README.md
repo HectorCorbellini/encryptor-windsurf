@@ -4,11 +4,12 @@ This Java application implements a file encryption and decryption system using t
 
 ## Recent Improvements
 
-- **Clean Code Refactoring**: Applied clean code principles with proper separation of concerns into specialized classes
-- **Object-Oriented Design**: Moved from procedural to object-oriented approach with clear class responsibilities
-- **Improved Project Structure**: Separated source files from compiled classes with proper directory organization
-- **Enhanced Error Handling**: More robust exception handling with descriptive error messages
-- **Unit Testing**: Added dedicated test class to verify all functionality
+- **Interface-Based Design**: Added `Encryptor` interface for better extensibility and maintainability
+- **Dependency Injection**: Improved testability and flexibility through constructor injection
+- **Enhanced Error Handling**: Better error messages and console output visibility
+- **Improved File Initialization**: Automatic creation of necessary directories and sample files
+- **Console Output**: Better handling of console output and user interaction
+- **Code Organization**: More modular structure with clear separation of concerns
 
 ## How It Works
 
@@ -145,8 +146,9 @@ This script runs all the above tests in sequence and provides a summary of resul
 - `bin/`: Contains compiled class files
 
 ### Source Files
+- `src/Encryptor.java`: Interface defining encryption operations
 - `src/EncryptorApp.java`: Main application entry point
-- `src/CaesarCipher.java`: Handles encryption and decryption logic
+- `src/CaesarCipher.java`: Implements Encryptor interface with Caesar cipher logic
 - `src/FileHandler.java`: Manages file operations
 - `src/EncryptorUI.java`: Handles user interface and interaction
 - `src/CaesarCipherTest.java`: Unit tests for the cipher functionality
