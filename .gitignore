@@ -18,6 +18,9 @@ bin/
 .project
 .settings/
 
+# GitHub tokens
+ghp_*
+
 # OS specific files
 .DS_Store
 Thumbs.db

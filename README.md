@@ -135,6 +135,12 @@ This script will:
 
 The Caesar cipher is a very basic encryption method and is not secure for sensitive information. It's primarily used for educational purposes or for basic obfuscation. For serious security applications, consider using modern encryption algorithms like AES or RSA.
 
+## Security Notice
+
+- The GitHub token used for repository access has been invalidated and rotated
+- Never commit or hardcode authentication tokens in source code
+- Use environment variables or GitHub Secrets for CI/CD pipelines
+
 ## Language Support
 
 The application is designed to work with both English and Spanish text. The brute force decryption feature analyzes common patterns in these languages to detect the encryption key automatically.
