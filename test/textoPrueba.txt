@@ -1,0 +1,3 @@
+Este es un archivo de prueba para la aplicación de encriptación.
+Contiene texto en español y caracteres especiales: áéíóúñ.
+El cifrado de César se aplicará a este contenido.

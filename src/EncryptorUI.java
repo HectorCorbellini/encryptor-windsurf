@@ -1,10 +1,15 @@
+package ui;
+
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
+import ui.EncryptionService;
+import ui.CaesarCipher;
 
 /**
  * Enhanced user interface for the file encryption/decryption application.
@@ -12,12 +17,12 @@ import java.util.Scanner;
  * content preview, and detailed operation feedback.
  */
 public class EncryptorUI {
-    public static final String DEFAULT_SOURCE_FILE = "/root/my-documents/textoPrueba.txt";
-    public static final String DEFAULT_ENCRYPTED_FILE = "/root/my-documents/textoEncrip.txt";
-    public static final String DEFAULT_DECRYPTED_FILE = "/root/my-documents/textoDecrypted.txt";
+    public static final String DEFAULT_SOURCE_FILE = "test/textoPrueba.txt";
+    public static final String DEFAULT_ENCRYPTED_FILE = "test/textoEncrip.txt";
+    public static final String DEFAULT_DECRYPTED_FILE = "test/textoDecrypted.txt";
     private static final int PREVIEW_LENGTH = 150; // Number of characters to preview
     
-    private final Encryptor encryptor;
+    private final EncryptionService encryptor;
     private final Scanner scanner;
     private String currentSourceFile;
     private String currentEncryptedFile;
@@ -40,29 +45,37 @@ public class EncryptorUI {
      * @param encryptedFile default encrypted file path
      * @param decryptedFile default decrypted file path
      */
-    public EncryptorUI(Encryptor encryptor, Scanner scanner,
+    public EncryptorUI(EncryptionService encryptor, Scanner scanner,
                       String sourceFile, String encryptedFile, String decryptedFile) {
         this.encryptor = encryptor;
         this.scanner = scanner;
         this.currentSourceFile = sourceFile;
         this.currentEncryptedFile = encryptedFile;
         this.currentDecryptedFile = decryptedFile;
-        
-        // Ensure directories exist
+        initializeFiles();
+    }
+    
+    /**
+     * Initializes the necessary files in the current directory
+     */
+    private void initializeFiles() {
         try {
-            ensureDirectoryExists(DEFAULT_SOURCE_FILE);
-            ensureDirectoryExists(DEFAULT_ENCRYPTED_FILE);
-            ensureDirectoryExists(DEFAULT_DECRYPTED_FILE);
-            
-            // Create sample text file if it doesn't exist
-            if (!Files.exists(Paths.get(DEFAULT_SOURCE_FILE))) {
-                String sampleText = "This is a sample text file for encryption testing.\n" +
-                                   "It contains multiple lines of text to demonstrate the\n" +
-                                   "encryption and decryption capabilities of this program.";
-                Files.write(Paths.get(DEFAULT_SOURCE_FILE), sampleText.getBytes());
+            // Create the files if they don't exist
+            if (!new File(currentSourceFile).exists()) {
+                String sampleText = "Este es un archivo de prueba para la aplicación de encriptación.\n" +
+                                  "Contiene texto en español y caracteres especiales: áéíóúñ.\n" +
+                                  "El cifrado de César se aplicará a este contenido.";
+                Files.write(Paths.get(currentSourceFile), sampleText.getBytes(StandardCharsets.UTF_8));
+            }
+            // Create empty files for encrypted and decrypted content
+            if (!new File(currentEncryptedFile).exists()) {
+                Files.createFile(Paths.get(currentEncryptedFile));
+            }
+            if (!new File(currentDecryptedFile).exists()) {
+                Files.createFile(Paths.get(currentDecryptedFile));
             }
         } catch (IOException e) {
-            System.err.println("Warning: Failed to initialize default files: " + e.getMessage());
+            displayMessage("Error initializing files: " + e.getMessage());
         }
     }
     
@@ -393,28 +406,9 @@ public class EncryptorUI {
      * @param choice the user's menu choice (1-3)
      */
     private void updateFilePath(int choice) {
-        try {
-            System.out.print("Enter the new file path: ");
-            String newPath = scanner.nextLine().trim();
-            ensureDirectoryExists(newPath);
-            updateFilePathForChoice(choice, newPath);
-        } catch (IOException e) {
-            System.out.println("Error updating file path: " + e.getMessage());
-        }
-    }
-
-    /**
-     * Ensures the parent directory exists for a given file path
-     * 
-     * @param filePath the path to check
-     * @throws IOException if directory creation fails
-     */
-    private void ensureDirectoryExists(String filePath) throws IOException {
-        Path path = Paths.get(filePath);
-        Path parent = path.getParent();
-        if (parent != null) {
-            Files.createDirectories(parent);
-        }
+        System.out.print("Enter the new file path: ");
+        String newPath = scanner.nextLine().trim();
+        updateFilePathForChoice(choice, newPath);
     }
 
     /**
@@ -553,5 +547,15 @@ public class EncryptorUI {
         } else {
             System.out.println(content);
         }
+    }
+    
+    /**
+     * Displays a message to the user
+     * 
+     * @param message the message to display
+     */
+    private void displayMessage(String message) {
+        System.out.println(message);
+        System.out.flush();
     }
 }

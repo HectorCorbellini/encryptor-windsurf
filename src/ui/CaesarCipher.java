@@ -1,3 +1,5 @@
+package ui;
+
 import java.io.*;
 import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
@@ -32,7 +34,7 @@ import java.util.List;
  * - Pattern Detection: May not detect keys in very short texts
  * - Memory Usage: Loads entire file content for key detection
  */
-public class CaesarCipher implements Encryptor {
+public class CaesarCipher implements EncryptionService {
     // ASCII character range constants for text processing
     // ASCII character range for encryption/decryption (32-255 for printable characters)
     private static final int CHAR_START = 32;      // First processable character (Space)

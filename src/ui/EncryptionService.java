@@ -1,16 +1,13 @@
+package ui;
+
 import java.io.IOException;
 
 /**
  * Interface defining encryption operations.
  * This allows for easy addition of new encryption algorithms
  * while maintaining a consistent API.
- *
- * Implementing classes should provide:
- * - File-based encryption and decryption
- * - Key detection capabilities
- * - Proper error handling
  */
-public interface Encryptor {
+public interface EncryptionService {
     /**
      * Encrypts a file using the specified key
      * 

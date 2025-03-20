@@ -22,9 +22,19 @@ clean() {
 # Compile the project
 compile() {
     echo "Compiling Java files..."
-    javac -d $BIN_DIR $SRC_DIR/*.java
+    # Compile all Java files recursively
+    find $SRC_DIR -name "*.java" -type f -exec javac -d $BIN_DIR {} +
     if [ $? -eq 0 ]; then
         echo -e "${GREEN}Compilation successful${NC}"
+        # Copy resource files
+        echo "Copying resource files..."
+        cp -r $SRC_DIR/resources/* $BIN_DIR/resources/
+        if [ $? -eq 0 ]; then
+            echo -e "${GREEN}Resource files copied successfully${NC}"
+        else
+            echo -e "${RED}Failed to copy resource files${NC}"
+            exit 1
+        fi
     else
         echo -e "${RED}Compilation failed${NC}"
         exit 1

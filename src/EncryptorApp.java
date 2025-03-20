@@ -1,7 +1,8 @@
-
-
 import java.io.IOException;
-import java.util.Scanner;
+import ui.UserInterface;
+import ui.UIFactory;
+import ui.EncryptionService;
+import ui.CaesarCipher;
 
 /**
  * Main application class for the File Encryption/Decryption program.
@@ -18,13 +19,10 @@ public class EncryptorApp {
     public static void main(String[] args) {
         try {
             // Create the encryption implementation
-            Encryptor encryptor = new CaesarCipher();
+            EncryptionService encryptor = new CaesarCipher();
             
-            // Create and start the user interface with the encryptor
-            EncryptorUI ui = new EncryptorUI(encryptor, new Scanner(System.in),
-                    EncryptorUI.DEFAULT_SOURCE_FILE,
-                    EncryptorUI.DEFAULT_ENCRYPTED_FILE,
-                    EncryptorUI.DEFAULT_DECRYPTED_FILE);
+            // Create and start the user interface based on user preference
+            UserInterface ui = UIFactory.createUI(encryptor);
             ui.start();
         } catch (Exception e) {
             System.err.println("An unexpected error occurred: " + e.getMessage());

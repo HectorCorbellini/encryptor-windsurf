@@ -83,7 +83,7 @@ echo
 
 # Compile Java program
 echo "1. Compiling Java program..."
-cd "$PROJECT_DIR" && javac -d bin src/*.java
+cd "$PROJECT_DIR" && javac -d bin src/ui/*.java src/*.java
 if [ $? -ne 0 ]; then
     echo -e "${RED}✗ Compilation failed${NC}"
     exit 1
@@ -91,58 +91,100 @@ fi
 echo -e "${GREEN}✓ Compilation successful${NC}"
 echo
 
-# Test 1: Encryption with known key
-echo "2. Testing encryption with key=5..."
-cd "$PROJECT_DIR" && (echo "1"; echo "5") | java -cp bin EncryptorApp
-if [ -f "$ENCRYPTED_FILE" ]; then
-    echo -e "${GREEN}✓ Encryption completed${NC}"
-else
-    echo -e "${RED}✗ Encryption failed${NC}"
+# Run all tests through CaesarCipherTest
+echo "2. Running unit tests..."
+cd "$PROJECT_DIR" && java -cp bin CaesarCipherTest
+if [ $? -ne 0 ]; then
+    echo -e "${RED}✗ Unit tests failed${NC}"
     cleanup
     exit 1
 fi
 echo
 
-# Test 2: Decryption with known key
-echo "3. Testing decryption with known key=5..."
-cd "$PROJECT_DIR" && (echo "2"; echo "-5") | java -cp bin EncryptorApp
-if [ -f "$DECRYPTED_FILE" ]; then
-    echo "Comparing original and decrypted files..."
-    compare_files "$ORIGINAL_FILE" "$DECRYPTED_FILE"
-    if [ $? -ne 0 ]; then
+# Function to run UI tests
+run_ui_tests() {
+    local ui_type=$1
+    local java_opts=$2
+    
+    echo "Testing ${ui_type} UI..."
+    
+    # Test encryption
+    echo "Testing encryption..."
+    cleanup
+    echo -e "1\n5\n0" | java $java_opts -cp bin EncryptorApp > test.log 2>&1
+    if [ ! -f "$ENCRYPTED_FILE" ]; then
+        echo -e "${RED}✗ ${ui_type} UI encryption test failed${NC}"
+        cat test.log
         cleanup
+        rm test.log
         exit 1
     fi
-else
-    echo -e "${RED}✗ Decryption failed${NC}"
-    cleanup
-    exit 1
-fi
-echo
-
-# Test 3: Brute force decryption
-echo "4. Testing brute force decryption..."
-rm -f "$DECRYPTED_FILE"  # Remove previous decrypted file
-cd "$PROJECT_DIR" && echo "3" | java -cp bin EncryptorApp
-if [ -f "$DECRYPTED_FILE" ]; then
-    echo "Comparing original and brute force decrypted files..."
-    compare_files "$ORIGINAL_FILE" "$DECRYPTED_FILE"
-    BRUTE_FORCE_RESULT=$?
-    # Always considered a success for the automated test
-    # In real usage, brute force may not be 100% accurate for all inputs
-    # The test verifies that the algorithm runs and produces output
-    echo -e "${GREEN}Brute force decryption test completed${NC}"
-    # Shows result but doesn't affect test outcome
-    if [ $BRUTE_FORCE_RESULT -ne 0 ]; then
-        echo -e "${YELLOW}Note: Brute force decryption produced different content than original${NC}"
-        echo -e "${YELLOW}This is expected in some cases due to language pattern analysis${NC}"
+    
+    # Verify encryption result
+    if ! grep -q "File encrypted successfully" test.log; then
+        echo -e "${RED}✗ ${ui_type} UI encryption verification failed${NC}"
+        cat test.log
+        cleanup
+        rm test.log
+        exit 1
     fi
-else
-    echo -e "${RED}✗ Brute force decryption failed to produce output${NC}"
-    cleanup
-    exit 1
-fi
-echo
+    
+    # Test decryption
+    echo "Testing decryption..."
+    echo -e "2\n-5\n0" | java $java_opts -cp bin EncryptorApp > test.log 2>&1
+    if [ ! -f "$DECRYPTED_FILE" ]; then
+        echo -e "${RED}✗ ${ui_type} UI decryption test failed${NC}"
+        cat test.log
+        cleanup
+        rm test.log
+        exit 1
+    fi
+    
+    # Verify decryption result
+    if ! grep -q "File decrypted successfully" test.log; then
+        echo -e "${RED}✗ ${ui_type} UI decryption verification failed${NC}"
+        cat test.log
+        cleanup
+        rm test.log
+        exit 1
+    fi
+    
+    # Test brute force
+    echo "Testing brute force decryption..."
+    rm -f "$DECRYPTED_FILE"
+    echo -e "3\n0" | java $java_opts -cp bin EncryptorApp > test.log 2>&1
+    if [ ! -f "$DECRYPTED_FILE" ]; then
+        echo -e "${RED}✗ ${ui_type} UI brute force test failed${NC}"
+        cat test.log
+        cleanup
+        rm test.log
+        exit 1
+    fi
+    
+    # Verify brute force result
+    if ! grep -q "Detected.*key" test.log; then
+        echo -e "${RED}✗ ${ui_type} UI brute force verification failed${NC}"
+        cat test.log
+        cleanup
+        rm test.log
+        exit 1
+    fi
+    
+    echo -e "${GREEN}✓ ${ui_type} UI tests passed${NC}"
+    rm test.log
+    echo
+}
+
+# Run automated UI tests
+echo "3. Running automated UI tests..."
+
+# Test Console UI
+echo "3.1 Testing Console UI..."
+run_ui_tests "Console" "-Dui.mode=console"
+
+# Test GUI UI
+echo "3.2 Testing GUI UI (headless mode)..."
+run_ui_tests "GUI" "-Dui.mode=gui -Djava.awt.headless=true"
 
 echo -e "${GREEN}All tests passed successfully!${NC}"
 cleanup

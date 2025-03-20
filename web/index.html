@@ -1,0 +1,339 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Caesar Cipher Encryptor</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            max-width: 800px;
+            margin: 0 auto;
+            padding: 20px;
+            line-height: 1.4;
+            background-color: #2c3e50;
+            color: #ecf0f1;
+        }
+        .main-container {
+            display: flex;
+            gap: 20px;
+        }
+        .left-panel {
+            flex: 1;
+        }
+        .right-panel {
+            flex: 1;
+        }
+        .panel {
+            border: 1px solid #34495e;
+            border-radius: 5px;
+            padding: 15px;
+            margin-bottom: 15px;
+            background-color: #34495e;
+        }
+        h1 {
+            color: #3498db;
+            text-align: center;
+            margin-top: 0;
+            margin-bottom: 15px;
+        }
+        h2 {
+            font-size: 18px;
+            margin-top: 0;
+            margin-bottom: 10px;
+            color: #3498db;
+        }
+        .form-group {
+            margin-bottom: 10px;
+        }
+        label {
+            display: inline-block;
+            width: 80px;
+            font-weight: bold;
+        }
+        input {
+            width: calc(100% - 90px);
+            padding: 6px;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            background-color: #ecf0f1;
+            color: #2c3e50;
+        }
+        .action-buttons {
+            display: flex;
+            gap: 10px;
+            margin-top: 15px;
+        }
+        .action-button {
+            flex: 1;
+            background-color: #1a5276;
+            color: white;
+            padding: 8px 0;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 14px;
+            text-align: center;
+            transition: background-color 0.2s;
+        }
+        .action-button:hover {
+            background-color: #2c3e50;
+        }
+        .action-button.active {
+            background-color: #e74c3c;
+        }
+        .output {
+            background-color: #ecf0f1;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            padding: 10px;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+        .file-preview {
+            white-space: pre-wrap;
+            background-color: #ecf0f1;
+            border: 1px solid #3498db;
+            border-radius: 4px;
+            padding: 10px;
+            height: 150px;
+            overflow-y: auto;
+            font-size: 14px;
+            color: #2c3e50;
+        }
+    </style>
+</head>
+<body>
+    <h1>Caesar Cipher Encryptor</h1>
+    
+    <div class="main-container">
+        <div class="left-panel">
+            <div class="panel">
+                <h2>File Settings</h2>
+                <div class="form-group">
+                    <label for="inputFile">Input:</label>
+                    <input type="text" id="inputFile" value="test/textoPrueba.txt">
+                </div>
+                <div class="form-group">
+                    <label for="outputFile">Output:</label>
+                    <input type="text" id="outputFile" value="test/textoEncrip.txt">
+                </div>
+                <div class="form-group" id="keyContainer">
+                    <label for="key">Key:</label>
+                    <input type="number" id="key" min="0" max="223" value="10">
+                </div>
+            </div>
+            
+            <div class="panel">
+                <h2>Actions</h2>
+                <div class="action-buttons">
+                    <button class="action-button" id="encryptBtn">Encrypt</button>
+                    <button class="action-button" id="decryptBtn">Decrypt</button>
+                    <button class="action-button" id="bruteForceBtn">Brute Force</button>
+                </div>
+                <div class="action-buttons">
+                    <button class="action-button" id="viewInputBtn">View Input</button>
+                    <button class="action-button" id="viewOutputBtn">View Output</button>
+                </div>
+            </div>
+        </div>
+        
+        <div class="right-panel">
+            <div class="panel">
+                <h2>Output</h2>
+                <div class="output" id="outputArea">Operation results will appear here...</div>
+            </div>
+            
+            <div class="panel">
+                <h2>File Preview</h2>
+                <div class="file-preview" id="filePreview">File content will appear here...</div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // This is a placeholder for the actual JavaScript that would interact with the Java application
+        // In a real implementation, this would use technologies like Java Web Start, Applets, or a server-side approach
+        
+        // Keep track of current operation mode
+        let currentOperationMode = 0; // 0=none, 1=encrypt, 2=decrypt, 3=brute force
+        
+        // Function to get current operation mode
+        function getCurrentOperationMode() {
+            return currentOperationMode;
+        }
+        
+        // Simple simulation of Caesar cipher encryption
+        function simulateEncryption(text, key) {
+            // Very basic simulation - just for demonstration purposes
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                let charCode = text.charCodeAt(i);
+                // Only shift printable ASCII characters
+                if (charCode >= 32 && charCode <= 255) {
+                    charCode = ((charCode - 32 + key) % 224) + 32;
+                }
+                result += String.fromCharCode(charCode);
+            }
+            return result;
+        }
+        
+        // Simple simulation of Caesar cipher decryption
+        function simulateDecryption(text, key) {
+            // Very basic simulation - just for demonstration purposes
+            let result = '';
+            for (let i = 0; i < text.length; i++) {
+                let charCode = text.charCodeAt(i);
+                // Only shift printable ASCII characters
+                if (charCode >= 32 && charCode <= 255) {
+                    // Add 224 to ensure positive value before modulo
+                    charCode = ((charCode - 32 - key + 224) % 224) + 32;
+                }
+                result += String.fromCharCode(charCode);
+            }
+            return result;
+        }
+        
+        // Function to execute an operation
+        function executeOperation(operationType) {
+            const inputFile = document.getElementById('inputFile').value;
+            const outputFile = document.getElementById('outputFile').value;
+            const key = document.getElementById('key').value;
+            
+            // Store the current operation mode
+            currentOperationMode = operationType;
+            
+            // Placeholder for actual Java method call
+            const outputArea = document.getElementById('outputArea');
+            
+            // Reset all action buttons
+            document.querySelectorAll('.action-button').forEach(btn => {
+                btn.classList.remove('active');
+            });
+            
+            // Highlight the clicked button
+            let buttonId = '';
+            let operationName = '';
+            switch(operationType) {
+                case 1: 
+                    operationName = 'Encrypt'; 
+                    buttonId = 'encryptBtn';
+                    break;
+                case 2: 
+                    operationName = 'Decrypt'; 
+                    buttonId = 'decryptBtn';
+                    break;
+                case 3: 
+                    operationName = 'Brute Force Decrypt'; 
+                    buttonId = 'bruteForceBtn';
+                    break;
+            }
+            
+            // Set active class on the selected button
+            if (buttonId) {
+                document.getElementById(buttonId).classList.add('active');
+            }
+            
+            outputArea.innerHTML = `Operation requested:<br>
+                Input: ${inputFile}<br>
+                Output: ${outputFile}<br>
+                Operation: ${operationName}<br>
+                ${operationType !== 3 ? 'Key: ' + key : ''}`;
+                
+            // In a real implementation, this would call the Java methods
+            // For example:
+            // WebAppLauncher.setParameters(inputFile, outputFile, key, operationType);
+            // WebAppLauncher.executeOperation();
+            
+            // Auto-view the output file after operation
+            setTimeout(() => {
+                viewFile(outputFile);
+                // Also highlight the viewOutputBtn to indicate this is what we're viewing
+                document.getElementById('viewInputBtn').classList.remove('active');
+                document.getElementById('viewOutputBtn').classList.add('active');
+            }, 500);
+        }
+        
+        // Function to view file content
+        function viewFile(filePath) {
+            const filePreview = document.getElementById('filePreview');
+            
+            // Simulate file content based on the file path and last operation
+            let content = '';
+            const sampleText = "Este es un texto de prueba para el cifrado César.\n" +
+                          "Contiene caracteres especiales como: á, é, í, ó, ú, ñ.\n" +
+                          "También incluye símbolos: !@#$%^&*()\n" +
+                          "Y números: 1234567890";
+            
+            // Get the current operation mode and key
+            const operationMode = getCurrentOperationMode();
+            const keyValue = document.getElementById('key').value;
+            const keyNum = parseInt(keyValue) || 10;
+            
+            if (filePath === 'test/textoPrueba.txt') {
+                content = sampleText;
+            } else if (filePath === 'test/textoEncrip.txt') {
+                // Show different content based on operation mode
+                if (operationMode === 1) { // Encrypt mode
+                    // Simulate encrypted content with the current key
+                    content = simulateEncryption(sampleText, keyNum);
+                } else if (operationMode === 2) { // Decrypt mode
+                    // For demonstration, show the original text when viewing the output after decryption
+                    content = sampleText;
+                } else if (operationMode === 3) { // Brute force mode
+                    // For demonstration, show the original text when viewing the output after brute force
+                    content = sampleText;
+                } else {
+                    // Default encrypted content (key 10)
+                    content = simulateEncryption(sampleText, 10);
+                }
+            } else if (filePath === 'test/textoDecrypted.txt') {
+                // For decryption operations, show the decrypted text
+                if (operationMode === 2 || operationMode === 3) {
+                    content = simulateDecryption(simulateEncryption(sampleText, keyNum), keyNum);
+                } else {
+                    content = sampleText;
+                }
+            } else {
+                content = `Content of ${filePath} is not available for preview.`;
+            }
+            
+            filePreview.innerHTML = content;
+        }
+        
+        // Event listeners for action buttons
+        document.getElementById('encryptBtn').addEventListener('click', function() {
+            executeOperation(1);
+        });
+        
+        document.getElementById('decryptBtn').addEventListener('click', function() {
+            executeOperation(2);
+        });
+        
+        document.getElementById('bruteForceBtn').addEventListener('click', function() {
+            // For brute force, key is not needed
+            executeOperation(3);
+        });
+        
+        document.getElementById('viewInputBtn').addEventListener('click', function() {
+            // Remove active class from view buttons
+            document.getElementById('viewInputBtn').classList.remove('active');
+            document.getElementById('viewOutputBtn').classList.remove('active');
+            // Set this button as active
+            this.classList.add('active');
+            viewFile(document.getElementById('inputFile').value);
+        });
+        
+        document.getElementById('viewOutputBtn').addEventListener('click', function() {
+            // Remove active class from view buttons
+            document.getElementById('viewInputBtn').classList.remove('active');
+            document.getElementById('viewOutputBtn').classList.remove('active');
+            // Set this button as active
+            this.classList.add('active');
+            viewFile(document.getElementById('outputFile').value);
+        });
+    </script>
+</body>
+</html>
