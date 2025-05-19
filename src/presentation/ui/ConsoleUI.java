@@ -1,4 +1,4 @@
-package ui;
+package presentation.ui;
 
 import java.io.File;
 import java.io.IOException;
@@ -6,6 +6,9 @@ import java.nio.charset.StandardCharsets;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.Scanner;
+
+import domain.encryption.EncryptionException;
+import domain.encryption.EncryptionService;
 
 /**
  * Console-based implementation of the UserInterface.
@@ -116,8 +119,14 @@ public class ConsoleUI implements UserInterface {
                     displayMessage("\nPress Enter to continue...");
                     scanner.nextLine();
                 }
+            } catch (EncryptionException e) {
+                displayMessage("Encryption Error: " + e.getUserFriendlyMessage());
+                if (!isTestMode) {
+                    displayMessage("Press Enter to continue...");
+                    scanner.nextLine();
+                }
             } catch (IOException e) {
-                displayMessage("Error: " + e.getMessage());
+                displayMessage("I/O Error: " + e.getMessage());
                 if (!isTestMode) {
                     displayMessage("Press Enter to continue...");
                     scanner.nextLine();
@@ -190,7 +199,7 @@ public class ConsoleUI implements UserInterface {
         displayMessage("================================================\n");
     }
 
-    private void handleEncryption() throws IOException {
+    private void handleEncryption() throws IOException, EncryptionException {
         displayPreview(new String(Files.readAllBytes(Paths.get(currentSourceFile))), "File Preview");
         int key = getIntegerInput("Enter the key value (positive for encryption, negative for decryption): ", -255, 255);
         
@@ -203,7 +212,7 @@ public class ConsoleUI implements UserInterface {
         displayPreview(preview, "Encrypted Content");
     }
     
-    private void handleDecryption() throws IOException {
+    private void handleDecryption() throws IOException, EncryptionException {
         displayPreview(new String(Files.readAllBytes(Paths.get(currentEncryptedFile))), "Encrypted Content");
         int key = getIntegerInput("Enter the key value (positive for encryption, negative for decryption): ", -255, 255);
         
@@ -216,7 +225,7 @@ public class ConsoleUI implements UserInterface {
         displayPreview(preview, "Decrypted Content");
     }
     
-    private void handleBruteForceDecryption() throws IOException {
+    private void handleBruteForceDecryption() throws IOException, EncryptionException {
         boolean isTestMode = System.getProperty("ui.mode") != null;
         if (!isTestMode) {
             displayMessage("Attempting to detect encryption key using brute force...");

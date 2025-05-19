@@ -1,6 +1,8 @@
-import ui.CaesarCipher;
-import ui.EncryptionService;
-import ui.WebUI;
+package application;
+
+import domain.encryption.CaesarCipher;
+import domain.encryption.EncryptionService;
+import presentation.ui.WebUI;
 
 /**
  * Entry point for the web-based version of the encryption application.
@@ -58,10 +60,16 @@ public class WebAppLauncher {
      */
     public static boolean executeOperation() {
         if (webUI == null) {
+            System.err.println("Error: Application not initialized");
             return false;
         }
         
-        return webUI.executeOperation();
+        try {
+            return webUI.executeOperation();
+        } catch (Exception e) {
+            System.err.println("Error executing operation: " + e.getMessage());
+            return false;
+        }
     }
     
     /**

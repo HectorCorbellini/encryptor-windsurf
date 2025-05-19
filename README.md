@@ -1,7 +1,7 @@
 # Caesar Cipher Encryption Tool
 
 ## Overview
-This is a Java-based file encryption/decryption application implementing the Caesar cipher method. The application provides a modern, interactive web interface for easy file encryption and decryption operations.
+This is a Java-based file encryption/decryption application implementing the Caesar cipher method. The application provides a modern, interactive web interface for easy file encryption and decryption operations. It can be used as a standalone application or embedded within another web application, such as a portfolio website. The codebase has been refactored to follow Clean Architecture principles and optimized for maintainability and extensibility.
 
 ## Features
 - Encrypt and decrypt text files using Caesar cipher
@@ -13,6 +13,14 @@ This is a Java-based file encryption/decryption application implementing the Cae
   - Dark mode UI design
 - Supports ASCII characters (range 32-255)
 - Handles special characters and Unicode text
+- Embeddable as a widget in other web applications
+- RESTful API for programmatic access
+- Clean Architecture implementation with:
+  - Separation of concerns (domain, application, presentation layers)
+  - Dependency injection for better testability
+  - Consistent error handling with custom exceptions
+  - Externalized configuration
+  - Proper exception propagation and handling
 
 ## Prerequisites
 - Java Development Kit (JDK) 8 or higher
@@ -20,48 +28,99 @@ This is a Java-based file encryption/decryption application implementing the Cae
 - Web browser
 
 ## Project Structure
-- `src/` - Contains all Java source files
-  - `ui/` - User interface implementations
-    - `legacy/` - Contains the legacy Swing UI
-  - `WebAppLauncher.java` - Entry point for web interface
-  - `EncryptorApp.java` - Main application entry point
-- `bin/` - Contains compiled .class files
+- `src/` - Java source files
+  - `domain/` - Domain layer (core business logic)
+    - `encryption/` - Encryption services (EncryptionService, CaesarCipher, KeyDetector, EncryptionConfig, EncryptionException)
+    - `io/` - I/O utilities (FileHandler)
+  - `application/` - Application layer (EncryptorApp.java, WebAppLauncher.java)
+  - `presentation/ui/` - Presentation/UI layer (ConsoleUI, EncryptorUI, WebUI, UIFactory, UserInterface)
+  - `resources/` - Localization and configuration files (message bundles for internationalization)
+- `bin/` - Compiled .class files
 - `web/` - Web interface files
+  - `api.py` - RESTful API server for integration
+  - `encryptor-widget.js` - Embeddable JavaScript widget
+  - `integration-example.html` - Example of portfolio integration
+- `test/` - Test files and scripts
+  - `test_encryption_updated.sh` - Script for testing encryption functionality
 - `run.sh` - Launcher script for easy startup
 - `start_server.sh` - Script to start the web server
+- `embedded_server.sh` - Script for embedded mode in other applications
+- `INTEGRATION.md` - Detailed integration instructions
+
+## Architecture and Design Patterns
+
+This application follows Clean Architecture principles to ensure maintainability, testability, and separation of concerns:
+
+### Layers
+- **Domain Layer**: Contains the core business logic and entities
+  - `EncryptionService`: Interface defining encryption operations
+  - `CaesarCipher`: Implementation of the Caesar cipher algorithm
+  - `KeyDetector`: Responsible for detecting encryption keys
+  - `EncryptionConfig`: Centralizes configuration values
+  - `EncryptionException`: Custom exception hierarchy for domain-specific errors
+
+- **Application Layer**: Coordinates the domain layer with the presentation layer
+  - `EncryptorApp`: Main application entry point
+  - `WebAppLauncher`: Entry point for web-based usage
+
+- **Presentation Layer**: Handles user interaction
+  - `UserInterface`: Interface for different UI implementations
+  - `ConsoleUI`, `WebUI`: Concrete UI implementations
+  - `UIFactory`: Factory for creating UI instances
+
+### Design Patterns
+- **Dependency Injection**: Components receive their dependencies through constructors
+- **Factory Method**: `UIFactory` creates appropriate UI implementations
+- **Strategy Pattern**: Different encryption algorithms can implement `EncryptionService`
+- **Single Responsibility Principle**: Each class has one reason to change
 
 ## Running the Application
 
 ### Using the Launcher Script (Easiest)
 1. Clone the repository
 2. Navigate to the project directory
-3. Run the launcher script:
+3. Make the scripts executable:
+   ```bash
+   chmod +x run.sh start_server.sh embedded_server.sh
+   ```
+4. Run the launcher script:
    ```bash
    ./run.sh
    ```
-4. Choose your preferred interface from the menu:
-   - Option 1: Web Interface (Recommended)
-   - Option 2: Legacy Swing Interface
-   - Option 3: Exit
+5. The web interface will automatically start
 
 ### Web Interface (Recommended)
 1. Clone the repository
 2. Navigate to the project directory
-3. Run the server script directly:
+3. Make the server script executable:
+   ```bash
+   chmod +x start_server.sh
+   ```
+4. Run the server script directly:
    ```bash
    ./start_server.sh
    ```
-4. Open a web browser and go to `http://localhost:8080`
+5. Open a web browser and go to `http://localhost:8080`
 
-### Legacy Swing Interface
-The project includes a legacy Swing UI interface that was part of the original application. To use this interface:
+### Integration with Other Web Applications
+The encryption tool can be embedded in other web applications, such as a portfolio website. For detailed integration instructions, see the `INTEGRATION.md` file.
 
-1. Set the system property when running the app:
+Quick integration steps:
+
+1. Start the embedded server:
    ```bash
-   java -Dui.mode=gui -cp bin EncryptorApp
+   ./embedded_server.sh
    ```
 
-This is maintained for backward compatibility, but the web interface is recommended for most users.
+2. Include the widget in your HTML:
+   ```html
+   <script src="path/to/encryptor-widget.js"></script>
+   <div id="encryptor-container"></div>
+   <script>
+     const encryptor = new EncryptorWidget();
+     encryptor.init('encryptor-container');
+   </script>
+   ```
 
 ### How to Use
 1. Select "Input File" to choose the file you want to encrypt/decrypt

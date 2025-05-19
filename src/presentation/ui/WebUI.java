@@ -1,10 +1,12 @@
-package ui;
+package presentation.ui;
 
 import java.io.IOException;
 import java.util.function.Consumer;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
+import domain.encryption.EncryptionException;
+import domain.encryption.EncryptionService;
 
 /**
  * Web-based user interface implementation for the encryption application.
@@ -86,8 +88,8 @@ public class WebUI implements UserInterface {
         } catch (NumberFormatException e) {
             displayMessage("Invalid key format: " + e.getMessage());
             return false;
-        } catch (IOException e) {
-            displayMessage("Error during file operation: " + e.getMessage());
+        } catch (EncryptionException e) {
+            displayMessage("Encryption error: " + e.getUserFriendlyMessage());
             return false;
         } catch (Exception e) {
             displayMessage("Unexpected error: " + e.getMessage());
@@ -96,7 +98,7 @@ public class WebUI implements UserInterface {
     }
     
     @Override
-    public void start() throws IOException {
+    public void start() {
         // This method is not used in web mode as operations are triggered by web events
         displayMessage("Web UI initialized. Operations will be triggered by web events.");
     }

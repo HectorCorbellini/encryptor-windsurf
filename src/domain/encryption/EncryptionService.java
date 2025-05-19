@@ -1,4 +1,4 @@
-package ui;
+package domain.encryption;
 
 import java.io.IOException;
 
@@ -16,7 +16,7 @@ public interface EncryptionService {
      * @param key encryption key
      * @throws IOException if an I/O error occurs
      */
-    void encryptFile(String sourceFile, String destinationFile, int key) throws IOException;
+    void encryptFile(String sourceFile, String destinationFile, int key) throws EncryptionException;
     
     /**
      * Decrypts a file using the specified key
@@ -26,7 +26,7 @@ public interface EncryptionService {
      * @param key decryption key
      * @throws IOException if an I/O error occurs
      */
-    void decryptFile(String sourceFile, String destinationFile, int key) throws IOException;
+    void decryptFile(String sourceFile, String destinationFile, int key) throws EncryptionException;
     
     /**
      * Attempts to detect the encryption key using various methods
@@ -35,5 +35,5 @@ public interface EncryptionService {
      * @return detected key, or 0 if detection failed
      * @throws IOException if an I/O error occurs
      */
-    int bruteForceDetectKey(String encryptedFile) throws IOException;
+    int bruteForceDetectKey(String encryptedFile) throws EncryptionException;
 }

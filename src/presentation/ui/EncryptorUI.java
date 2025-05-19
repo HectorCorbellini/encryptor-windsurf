@@ -1,4 +1,4 @@
-package ui;
+package presentation.ui;
 
 import java.io.File;
 import java.io.IOException;
@@ -8,8 +8,9 @@ import java.nio.file.Paths;
 import java.nio.charset.StandardCharsets;
 import java.util.NoSuchElementException;
 import java.util.Scanner;
-import ui.EncryptionService;
-import ui.CaesarCipher;
+import domain.encryption.EncryptionService;
+import domain.encryption.CaesarCipher;
+import domain.encryption.EncryptionException;
 
 /**
  * Enhanced user interface for the file encryption/decryption application.
@@ -124,6 +125,10 @@ public class EncryptorUI {
                 System.err.println("Error: " + e.getMessage());
                 System.err.flush();
                 waitForEnter();
+            } catch (EncryptionException e) {
+                System.err.println("Encryption error: " + e.getUserFriendlyMessage());
+                System.err.flush();
+                waitForEnter();
             } catch (IllegalArgumentException e) {
                 System.err.println("Invalid input: " + e.getMessage());
                 System.err.flush();
@@ -192,8 +197,9 @@ public class EncryptorUI {
      * 
      * @param choice the user's menu choice
      * @throws IOException if an I/O error occurs
+     * @throws EncryptionException if an encryption or decryption error occurs
      */
-    private void processUserChoice(int choice) throws IOException {
+    private void processUserChoice(int choice) throws IOException, EncryptionException {
         switch (choice) {
             case 1:
                 handleEncryption();
@@ -217,8 +223,9 @@ public class EncryptorUI {
      * Handles the encryption process with file preview
      * 
      * @throws IOException if an I/O error occurs
+     * @throws EncryptionException if an encryption error occurs
      */
-    private void handleEncryption() throws IOException {
+    private void handleEncryption() throws IOException, EncryptionException {
         System.out.println("\n=== File Encryption ===\n");
         previewFileContent(currentSourceFile, "Source file preview");
         
@@ -240,8 +247,9 @@ public class EncryptorUI {
      * Handles the decryption process with file preview
      * 
      * @throws IOException if an I/O error occurs
+     * @throws EncryptionException if a decryption error occurs
      */
-    private void handleDecryption() throws IOException {
+    private void handleDecryption() throws IOException, EncryptionException {
         System.out.println("\n=== File Decryption ===\n");
         previewFileContent(currentEncryptedFile, "Encrypted file preview");
         
@@ -263,22 +271,19 @@ public class EncryptorUI {
      * Handles the brute force decryption process
      * 
      * @throws IOException if an I/O error occurs
+     * @throws EncryptionException if a decryption error occurs
      */
-    private void handleBruteForceDecryption() throws IOException {
-        try {
-            int detectedKey = encryptor.bruteForceDetectKey(currentEncryptedFile);
-            
-            if (detectedKey == 0) {
-                System.out.println("Could not detect encryption key. Decryption failed.");
-                return;
-            }
-            
-            System.out.println("Detected encryption key: " + detectedKey);
-            encryptor.decryptFile(currentEncryptedFile, currentDecryptedFile, -detectedKey);
-            System.out.println("File decrypted successfully as " + DEFAULT_DECRYPTED_FILE);
-        } catch (IOException e) {
-            throw new IOException("Failed to decrypt file: " + e.getMessage(), e);
+    private void handleBruteForceDecryption() throws IOException, EncryptionException {
+        int detectedKey = encryptor.bruteForceDetectKey(currentEncryptedFile);
+        
+        if (detectedKey == 0) {
+            System.out.println("Could not detect encryption key. Decryption failed.");
+            return;
         }
+        
+        System.out.println("Detected encryption key: " + detectedKey);
+        encryptor.decryptFile(currentEncryptedFile, currentDecryptedFile, -detectedKey);
+        System.out.println("File decrypted successfully as " + DEFAULT_DECRYPTED_FILE);
     }
     
     /**

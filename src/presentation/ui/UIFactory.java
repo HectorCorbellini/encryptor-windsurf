@@ -1,6 +1,6 @@
-package ui;
+package presentation.ui;
 
-import ui.legacy.SwingUI;
+import domain.encryption.EncryptionService;
 
 /**
  * Factory class for creating user interface instances.
@@ -12,7 +12,6 @@ public class UIFactory {
      */
     public enum UIType {
         CONSOLE,
-        GUI,
         WEB
     }
     
@@ -26,9 +25,7 @@ public class UIFactory {
         // Check for system property first (for automated testing)
         String uiMode = System.getProperty("ui.mode");
         if (uiMode != null) {
-            if (uiMode.equalsIgnoreCase("gui")) {
-                return createUI(encryptor, UIType.GUI);
-            } else if (uiMode.equalsIgnoreCase("console")) {
+            if (uiMode.equalsIgnoreCase("console")) {
                 return createUI(encryptor, UIType.CONSOLE);
             } else if (uiMode.equalsIgnoreCase("web")) {
                 return createUI(encryptor, UIType.WEB);
@@ -48,8 +45,6 @@ public class UIFactory {
      */
     public static UserInterface createUI(EncryptionService encryptor, UIType type) {
         switch (type) {
-            case GUI:
-                return new SwingUI(encryptor);
             case WEB:
                 return new WebUI(encryptor);
             case CONSOLE:

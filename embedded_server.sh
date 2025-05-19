@@ -15,16 +15,9 @@ mkdir -p /tmp/server
 # Copy web files to temporary server directory
 cp -r web/* /tmp/server/ 2>/dev/null || echo "Warning: No web files found. Make sure web directory exists."
 
-# Start Python HTTP server in the background
-cd /tmp/server && python3 -m http.server 8080 &
+# Start Python API server in the background
+cd /tmp/server && python3 api.py $1 &
+SERVER_PID=$!
 
-# Wait for server to start
-sleep 1
-
-# Inform user
-echo -e "\nCaesar Cipher Encryption Tool web interface started!"
-echo "Please open your browser at http://localhost:8080"
-echo "Press Ctrl+C to stop the server when finished."
-
-# Keep script running until user hits Ctrl+C
-wait
+# Return the PID so the parent application can kill it when needed
+echo $SERVER_PID

@@ -1,6 +1,7 @@
-package ui;
+package presentation.ui;
 
 import java.io.IOException;
+import domain.encryption.EncryptionException;
 
 /**
  * Interface defining the user interface operations for the encryption application.
@@ -13,7 +14,7 @@ public interface UserInterface {
      * 
      * @throws IOException if there is an error during file operations
      */
-    void start() throws IOException;
+    void start() throws IOException, EncryptionException;
     
     /**
      * Displays a message to the user

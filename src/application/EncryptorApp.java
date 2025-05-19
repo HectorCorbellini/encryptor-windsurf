@@ -1,8 +1,10 @@
+package application;
+
 import java.io.IOException;
-import ui.UserInterface;
-import ui.UIFactory;
-import ui.EncryptionService;
-import ui.CaesarCipher;
+import presentation.ui.UserInterface;
+import presentation.ui.UIFactory;
+import domain.encryption.EncryptionService;
+import domain.encryption.CaesarCipher;
 
 /**
  * Main application class for the File Encryption/Decryption program.
