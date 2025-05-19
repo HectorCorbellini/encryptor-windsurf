@@ -45,7 +45,7 @@ This is a Java-based file encryption/decryption application implementing the Cae
 - `run.sh` - Launcher script for easy startup
 - `start_server.sh` - Script to start the web server
 - `embedded_server.sh` - Script for embedded mode in other applications
-- `INTEGRATION.md` - Detailed integration instructions
+- `INTEGRATION.md` - Detailed web application integration instructions
 
 ## Architecture and Design Patterns
 
@@ -102,8 +102,8 @@ This application follows Clean Architecture principles to ensure maintainability
    ```
 5. Open a web browser and go to `http://localhost:8080`
 
-### Integration with Other Web Applications
-The encryption tool can be embedded in other web applications, such as a portfolio website. For detailed integration instructions, see the `INTEGRATION.md` file.
+### Web Application Integration
+This tool provides a RESTful API server and an embeddable JavaScript widget for seamless integration into web applications. For detailed instructions, see `INTEGRATION.md`.
 
 Quick integration steps:
 
